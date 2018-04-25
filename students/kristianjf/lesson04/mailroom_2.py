@@ -69,21 +69,18 @@ def thank_you():
             Process Full Name
             '''
             ds_names = [name for name, donation in DATA_STRUCTURE]
+
             if full_name in ds_names:
                 full_name_index = ds_names.index(full_name)
                 print(f'Found {full_name} in data_structure')
                 donation_amount = int(input('Please enter a donation amount: '))
                 DATA_STRUCTURE[full_name_index][1].append(donation_amount)
-                print(f'Dear {full_name},\n\nThank you for your generous donation of '
-                      f'${donation_amount}. Please send us more money at your earliest '
-                      f'convenience.')
+                print(output_string().format(full_name=full_name, donation_amount=donation_amount))
                 break
             else:
                 donation_amount = int(input('Please enter a donation amount: '))
                 DATA_STRUCTURE.append((full_name, [donation_amount]))
-                print(f'Dear {full_name},\n\nThank you for your generous donation of '
-                      f'${donation_amount}. Please send us more money at your earliest '
-                      f'convenience.')
+                print(output_string().format(full_name=full_name, donation_amount=donation_amount))
                 break
         elif response in [str(options[1][0]), 'list']:
             for entry in DATA_STRUCTURE:
@@ -146,9 +143,9 @@ def send_letters(data_structure=DATA_STRUCTURE[:]):
     letter, and writes it to disk as a text file.
     '''
     data_structure_list = []
-    for name, donations in data_structure:
+    for full_name, donations in data_structure:
         data_structure_dict = {}
-        data_structure_dict['name'] = name
+        data_structure_dict['name'] = full_name
         data_structure_dict['donation'] = donations[-1]
         data_structure_list.append(data_structure_dict)
     for entry in data_structure_list:
@@ -156,9 +153,16 @@ def send_letters(data_structure=DATA_STRUCTURE[:]):
         print(filename)
         print(entry)
         with open(filename, 'w') as outfile:
-            outfile.write('Dear {name},\n\nThank you for your very kind donation of '
-                          '${donation:.2f}\n\nIt will be put to very good use.\n\n'
-                          '{:' '<15}Sincerely, \n\n{:' '<15}-The Team'.format(' ', ' ', **entry,))
+            #outfile.write('Dear {name},\n\nThank you for your very kind donation of '
+            #              '${donation:.2f}\n\nIt will be put to very good use.\n\n'
+            #              '{:' '<15}Sincerely, \n\n{:' '<15}-The Team'.format(' ', ' ', **entry,))
+            outfile.write(output_string().format(**entry))
+
+def output_string():
+    format_string = 'Dear {full_name},\n\nThank you for your generous donation of ' \
+                    '${donation_amount}. Please send us more money at your earliest ' \
+                    'convenience.'
+    return format_string
 
 PROGRAM_OPTIONS_DICT = {'Send a Thank You': thank_you, 'Create a Report': create_a_report, \
 'Send Letters to Everyone': send_letters, 'quit': sys.exit}
